@@ -11,15 +11,15 @@ Las fotos a continuacion son tomadas de una copia hecha hace mas de 2 decadas a 
 
 <img src="https://github.com/elieser9001/assets/blob/main/netsuite1.jpeg?raw=true"
      alt="netsuite"
-     style="float: left; margin-right: 10px; width: 400px" />
+     style="width: 400px" />
 
 <img src="https://github.com/elieser9001/assets/blob/main/netsuite2.jpeg?raw=true"
      alt="netsuite"
-     style="float: left; margin-right: 10px; width: 400px" />
+     style="width: 400px" />
 
 <img src="https://github.com/elieser9001/assets/blob/main/netsuite3.jpeg?raw=true"
      alt="netsuite"
-     style="float: left; margin-right: 10px; width: 400px" />
+     style="width: 400px" />
 
 
 ___
