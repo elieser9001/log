@@ -1,7 +1,27 @@
 <img src="https://raw.githubusercontent.com/elieser9001/assets/main/antenna.png"
-     alt="Markdown Monster icon"
+     alt="windows_icon"
      style="float: left; margin-right: 10px;" />
-## NetSuite
+## NetSuites
+
+En la universidad en 1999 hice un sistema para administrar remotamente todas las estaciones de Windows NT en los laboratorios de informatica para llevar el control del tiempo de uso de cada una de las estaciones (en su tiempo era como un sistema que hoy en dia es usado para administrar los cibercafes) entre las funciones que le integre estaba la de vigilar por medio de las Windows Api (Winapi) cualquier palabra prohibida como por ejemplo: pornografia, apuestas y demas palabras claves restringidas en el uso academico dentro de los titulos de las ventanas abiertas y proceder a cerrarlas y notificar al supervisor del suceso acontecido.
+
+Use Visual Basic 5 y luego lo actualice a la version 6 con Sockets usando protocolos TCP y UDP para el broadcast que me permitia agregar las direcciones IP's de todas las estaciones que tenian instalado mi sistema servidor y asi se muestran automaticamente en el sistema cliente, por lo cual termine desarrollando 2 sistemas, un cliente y un servidor.
+
+Las fotos a continuacion son tomadas de una copia hecha hace mas de 2 decadas a la tesis original.
+
+<img src="https://github.com/elieser9001/assets/blob/main/netsuite1.jpeg?raw=true"
+     alt="netsuite"
+     style="float: left; margin-right: 10px; width: 400px" />
+
+<img src="https://github.com/elieser9001/assets/blob/main/netsuite2.jpeg?raw=true"
+     alt="netsuite"
+     style="float: left; margin-right: 10px; width: 400px" />
+
+<img src="https://github.com/elieser9001/assets/blob/main/netsuite3.jpeg?raw=true"
+     alt="netsuite"
+     style="float: left; margin-right: 10px; width: 400px" />
+
+
 
 You can use the [editor on GitHub](https://github.com/elieser9001/log/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
 
