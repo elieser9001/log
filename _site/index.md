@@ -663,7 +663,6 @@ def buscar_pelea(cookie):
   
   #i = 1
   for i in range(5):
-    
     dato_pandillero = tmp[i]
     id = extraer(dato_pandillero,'<a name="','"')
     sig = extraer(dato_pandillero,'&#039;,&#039;','&#039;);}')
@@ -844,4 +843,7 @@ def main():
 
 if __name__ == '__main__':
   main()
+```
+
+
 

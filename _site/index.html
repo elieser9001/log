@@ -193,41 +193,40 @@ y también extraer la contraseña de administrador del sistema para poder desblo
 
 <p>El script es del año 2008, cuando estaba comenzando a aprender Python. 😆</p>
 
-<p>```python:
-import sys
+<pre><code class="language-python:">import sys
 import httphack
 import threading
 import sys
 import socket
 import string
 import os
-import time</p>
+import time
 
-<p>cont_lista_peleas = 0</p>
+cont_lista_peleas = 0
 
-<p>TIEMPO_REFRESCAR = 30.0
+TIEMPO_REFRESCAR = 30.0
 EN_PARA_HACER_MISION = 16
 NUM_MISION = 8
-MIN_HP = 40 #mi hp minimo para pelear</p>
+MIN_HP = 40 #mi hp minimo para pelear
 
-<p>class c_mi:
+class c_mi:
   nivel = 0
-  puntos = ‘’
+  puntos = ''
   hp = 0
   hp_max = 0
   sta = 0
   sta_max = 0
   efectivo = 0
-  banco = 0</p>
+  banco = 0
 
-<p>mi = c_mi()</p>
+mi = c_mi()
 
-<p>class c_pandillero:
-  id = ‘’
-  sig = ‘’
-  nombre = ‘’
+class c_pandillero:
+  id = ''
+  sig = ''
+  nombre = ''
   nivel = 0
-  apodo = ‘’
+  apodo = ''
   esquina = 0
   tienda = 0
   cibercafe = 0
@@ -238,597 +237,609 @@ MIN_HP = 40 #mi hp minimo para pelear</p>
   prostibulo = 0
   centro_comercial = 0
   hotel = 0
-  casino = 0</p>
+  casino = 0
 
-<p>cookie_bot = ‘’</p>
+cookie_bot = ''
 
-<p>def exit_client():
-  raise SystemExit</p>
+def exit_client():
+  raise SystemExit
 
-<p>def extraer(fullstring,strinicio,strfinal):
-  _posName = fullstring.find(strinicio)</p>
 
-<p>if (_posName &gt;= 0):
+def extraer(fullstring,strinicio,strfinal):
+  _posName = fullstring.find(strinicio)
+  
+  if (_posName &gt;= 0):
     _posName += len(strinicio)
     _posFinal = fullstring.find(strfinal,_posName)
     _resultado = fullstring[_posName:_posFinal]
   else:
-    _resultado = ‘’</p>
+    _resultado = ''
+    	
+  return _resultado
 
-<p>return _resultado</p>
 
-<p>def dato_nivel(datos):
-  resultado = extraer(datos,’“profilebox_item”&gt;Nivel: ‘,’&lt;/div&gt;’)</p>
+def dato_nivel(datos):
+  resultado = extraer(datos,'"profilebox_item"&gt;Nivel: ','&lt;/div&gt;')
+  
+  return resultado
 
-<p>return resultado</p>
+def dato_hp(datos):
+  resultado = extraer(datos,'&lt;div&gt;HP: ','&lt;/div&gt;')
+  
+  return resultado
 
-<p>def dato_hp(datos):
-  resultado = extraer(datos,’&lt;div&gt;HP: ‘,’&lt;/div&gt;’)</p>
 
-<p>return resultado</p>
+def dato_en(datos):
+  resultado = extraer(datos,'&lt;div class="profilebox_item"&gt;EN: ','&lt;/div&gt;')
+  
+  return resultado
 
-<p>def dato_en(datos):
-  resultado = extraer(datos,’&lt;div class="profilebox_item"&gt;EN: ‘,’&lt;/div&gt;’)</p>
+def dato_en(datos):
+  resultado = extraer(datos,'&lt;div class="profilebox_item"&gt;EN: ','&lt;/div&gt;')
+  
+  return resultado
 
-<p>return resultado</p>
+def dato_sta(datos):
+  resultado = extraer(datos,'&lt;div class="profilebox_item"&gt;STA: ','&lt;/div&gt;')
+  
+  return resultado
 
-<p>def dato_en(datos):
-  resultado = extraer(datos,’&lt;div class="profilebox_item"&gt;EN: ‘,’&lt;/div&gt;’)</p>
 
-<p>return resultado</p>
+def dato_banco(datos):
+  resultado = extraer(datos,'( Mi cuenta del banco: &lt;span class="green"&gt;$','&lt;/span&gt;,')
+  
+  return resultado
 
-<p>def dato_sta(datos):
-  resultado = extraer(datos,’&lt;div class="profilebox_item"&gt;STA: ‘,’&lt;/div&gt;’)</p>
+def dato_efectivo(datos):
+  resultado = extraer(datos,'inero: &lt;span class="green"&gt;','&lt;/span&gt;&lt;/div&gt;')
+  
+  return resultado
 
-<p>return resultado</p>
-
-<p>def dato_banco(datos):
-  resultado = extraer(datos,’( Mi cuenta del banco: <span class="green">$’,’</span>,’)</p>
-
-<p>return resultado</p>
-
-<p>def dato_efectivo(datos):
-  resultado = extraer(datos,’inero: <span class="green">’,’</span>&lt;/div&gt;’)</p>
-
-<p>return resultado</p>
-
-<p>def server_paquete(datos):<br />
+def server_paquete(datos):  
   pos_linea = datos.find(chr(13))
-  pos_espacio = datos.find(‘ ‘)</p>
+  pos_espacio = datos.find(' ')
+  
+  tipo = datos[0:pos_espacio]
 
-<p>tipo = datos[0:pos_espacio]</p>
+  cgi = extraer(datos,' ',' ')
+  servidor = extraer(datos,'Host: ',chr(13))
+  cookie = extraer(datos,'Cookie: ',chr(13))
 
-<p>cgi = extraer(datos,’ ‘,’ ‘)
-  servidor = extraer(datos,’Host: ‘,chr(13))
-  cookie = extraer(datos,’Cookie: ‘,chr(13))</p>
+  return ({'tipo':tipo,'cgi':cgi,'servidor':servidor,'cookie':cookie})
 
-<p>return ({‘tipo’:tipo,’cgi’:cgi,’servidor’:servidor,’cookie’:cookie})</p>
-
-<p>class letsrock(threading.Thread):
-  def run(self):<br />
-    #socket ——————————————————————
+  
+class letsrock(threading.Thread):
+  def run(self):  
+    #socket ------------------------------------------------------------------
     sck_servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sck_servidor.bind((‘localhost’, 8080))
-    sck_servidor.listen(5)</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>conn, addr = sck_servidor.accept()
-sck_servidor.setblocking(0)
+    sck_servidor.bind(('localhost', 8080))
+    sck_servidor.listen(5)
     
-_html = ''
+    conn, addr = sck_servidor.accept()
+    sck_servidor.setblocking(0)
+        
+    _html = ''
   
-puerto = 80
+    puerto = 80
 
-sck_cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
-
-while(True):
-  _datos_rcv = str(conn.recv(1024))      
-
-  if not _datos_rcv:
-    break
-    conn.close()
-  
-  
-  info_paquete = server_paquete(_datos_rcv)
-  
-  tipo = info_paquete['tipo']
-  servidor = info_paquete['servidor']
-  cgi = info_paquete['cgi']
-  cookie = info_paquete['cookie']
-  
-  parametros = ""   
-
-  datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)['data']
+    sck_cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
+    
+    while(True):
+      _datos_rcv = str(conn.recv(1024))      
+    
+      if not _datos_rcv:
+        break
+        conn.close()
       
-  _html += _datos_rcv
-</code></pre></div></div>
+      
+      info_paquete = server_paquete(_datos_rcv)
+      
+      tipo = info_paquete['tipo']
+      servidor = info_paquete['servidor']
+      cgi = info_paquete['cgi']
+      cookie = info_paquete['cookie']
+      
+      parametros = ""   
+    
+      datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)['data']
+          
+      _html += _datos_rcv
+      
 
-<p>def tomar_cookie(conn):
+def tomar_cookie(conn):
   global cookie_bot
-  datos = ‘’</p>
-
-<p>while(1):
+  datos = ''
+  
+  while(1):
     _datos_rcv = str(conn.recv(1024))
-    datos += _datos_rcv</p>
+    datos += _datos_rcv
+    
+    if (len(_datos_rcv) &lt;= 0) or (datos.find("__qcb=")&gt;=0):
+      conn.close()
+      break
+    
+  if (len(datos) &gt; 0):
+    info_paquete = server_paquete(datos)
+        
+    tipo = info_paquete['tipo']
+    servidor = info_paquete['servidor']
+    cgi = info_paquete['cgi']
+    cookie = info_paquete['cookie']
+    
+    if (servidor == 'apps.facebook.com') and (len(cookie) &gt; 0) :
+      cookie_bot = cookie
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (len(_datos_rcv) &lt;= 0) or (datos.find("__qcb=")&gt;=0):
-  conn.close()
-  break
-</code></pre></div></div>
+      return True
+    else:
+      cookie_bot = ''
+      print "[-]-Error al inicializar (Intente nuevamente)"
+      print datos
+      return False
+  else:
+    return False
 
-<p>if (len(datos) &gt; 0):
-    info_paquete = server_paquete(datos)</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tipo = info_paquete['tipo']
-servidor = info_paquete['servidor']
-cgi = info_paquete['cgi']
-cookie = info_paquete['cookie']
-
-if (servidor == 'apps.facebook.com') and (len(cookie) &gt; 0) :
-  cookie_bot = cookie
-
-  return True
-else:
-  cookie_bot = ''
-  print "[-]-Error al inicializar (Intente nuevamente)"
-  print datos
-  return False   else:
-return False
-</code></pre></div></div>
-
-<p>def actualizar_datos(datos):
+def actualizar_datos(datos):
   banco = dato_banco(datos)
   efectivo = dato_efectivo(datos)
   nivel = dato_nivel(datos)
   hp = dato_hp(datos)
   en = dato_en(datos)
-  sta = dato_sta(datos)</p>
-
-<p>efectivo = string.replace(efectivo,’$’,’’)
-  efectivo = string.replace(efectivo,’,’,’’)</p>
-
-<p>pos_barra_hp = hp.find(‘/’)
-  pos_barra_en = en.find(‘/’)
-  pos_barra_sta = sta.find(‘/’)<br />
-  pos_barra_nivel = nivel.find(‘ ‘)</p>
-
-<p>print “EFECTIVO “ + efectivo
-  print “PRUEBA DE NIVEL: “ + nivel[0:pos_barra_nivel]
-  print “Puntos: “ + extraer(nivel,’(‘,’)’)
-  print “EN maximo: “ + en[pos_barra_en+1:len(en)]
-  print “STA: “ + sta</p>
-
-<p>mi.banco = banco
+  sta = dato_sta(datos)
+  
+  efectivo = string.replace(efectivo,'$','')
+  efectivo = string.replace(efectivo,',','')  
+  
+  pos_barra_hp = hp.find('/')
+  pos_barra_en = en.find('/')
+  pos_barra_sta = sta.find('/')  
+  pos_barra_nivel = nivel.find(' ')
+  
+  
+  print "EFECTIVO " + efectivo
+  print "PRUEBA DE NIVEL: " + nivel[0:pos_barra_nivel]
+  print "Puntos: " + extraer(nivel,'(',')')
+  print "EN maximo: " + en[pos_barra_en+1:len(en)]
+  print "STA: " + sta
+  
+  
+  mi.banco = banco
   mi.efectivo = int(efectivo)
   mi.nivel = int(nivel[0:pos_barra_nivel])
-  mi.puntos = extraer(nivel,’(‘,’)’)
+  mi.puntos = extraer(nivel,'(',')')
   mi.hp = int(hp[0:pos_barra_hp])
   mi.en = int(en[0:pos_barra_en])
   mi.en_max = int(en[pos_barra_en+1:len(en)])
   mi.sta = int(sta[0:pos_barra_sta])
-  mi.sta_max = int(sta[pos_barra_sta+1:len(sta)])</p>
+  mi.sta_max = int(sta[pos_barra_sta+1:len(sta)])
 
-<p>def ack(cookie_inicial=’’):
+
+def ack(cookie_inicial=''):
   global cookie_bot
   try:
-    if len(cookie_inicial)&gt;0:  <br />
+    if len(cookie_inicial)&gt;0:    
       cookie = cookie_inicial
-      servidor = “apps.facebook.com”
+      servidor = "apps.facebook.com"
       puerto = 80
-      tipo = “POST”
-      cgi = “/ajax/chat/buddy_list.php”
-      parametros = ‘user=702519843&amp;popped_out=false&amp;&amp;force_render=false&amp;buddy_list=1&amp;post_form_id=7f96c82dab148e91ee567685a827f1e7’</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  paquete = 'POST /ajax/chat/buddy_list.php HTTP/1.1' + chr(13) + chr(10)
-  paquete += 'Host: apps.facebook.com' + chr(13) + chr(10)
-  paquete += 'User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3' + chr(13) + chr(10)
-  paquete += 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' + chr(13) + chr(10)
-  paquete += 'Accept-Language: es-es,es;q=0.8,en-us;q=0.5,en;q=0.3' + chr(13) + chr(10)
-  paquete += 'Accept-Encoding: deflate' + chr(13) + chr(10)
-  paquete += 'Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7' + chr(13) + chr(10)
-  paquete += 'Keep-Alive: 300' + chr(13) + chr(10)
-  paquete += 'Proxy-Connection: keep-alive' + chr(13) + chr(10)
-  paquete += 'X-SVN-Rev: 130297' + chr(13) + chr(10)
-  paquete += 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' + chr(13) + chr(10)
-  paquete += 'Cookie: ' + cookie_inicial + chr(13) + chr(10)      
-  paquete += 'Pragma: no-cache' + chr(13) + chr(10)
-  paquete += 'Cache-Control: no-cache' + chr(13) + chr(10)
-  paquete += 'Content-Length: ' + str(len(parametros)) + chr(13) + chr(10) + chr(13) + chr(10)
-  
-  paquete += parametros
-  
-  sck_cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
-  sck_cliente.connect((servidor, puerto))
-  sck_cliente.send(paquete)
-  
-  datos = ''
-  
-  _datos_rcv = str(sck_cliente.recv(1024))
-  datos += _datos_rcv
-  
-  error_numero = extraer(datos,'"error":',',"')
-  
-  if error_numero == '0':
-    error_info = 'Todo Bien'
-    nuevo_xs = extraer(datos,"xs=",';')
-    nuevo_time = extraer(datos,'"time":','000,')        
-    
-    cookie_time = extraer(cookie_bot,"time%22%3A","%2C%22ch")
-    cookie_xs = extraer(cookie_bot,"xs=",';')        
-    
-    if len(nuevo_xs) &gt; 0:
-      cookie_bot =  string.replace(cookie_bot,cookie_xs,nuevo_xs)        
-    
-    if len(cookie_time) &gt; 0:
-      cookie_bot = string.replace(cookie_bot,cookie_time,nuevo_time)
-  
-    tipo = "GET"
-    cgi = "/guerra-de-pandillas/bank.php"
-    cookie = cookie_bot
-    parametros = ""
-    
-    datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)['data']
-
-    #print datos
-    
-    if len(datos) &gt; 0:
-      actualizar_datos(datos)
+      tipo = "POST"
+      cgi = "/ajax/chat/buddy_list.php"
+      parametros = 'user=702519843&amp;popped_out=false&amp;&amp;force_render=false&amp;buddy_list=1&amp;post_form_id=7f96c82dab148e91ee567685a827f1e7'
       
-      print "--------------------------ACK------------------------------------"
-      print "    Nivel: " + str(mi.nivel) + " (" + mi.puntos + ")"
-      print "       HP: " + str(mi.hp)
-      print "       EN: " + str(mi.en)
-      print "      STA: " + str(mi.sta)
-      print " Efectivo: " + str(mi.efectivo)
-      print "    Banco: " + str(mi.banco)
-      print ""
-      print " Ultima actualizacion: -[" + time.strftime("%H:%M:%S %p - %d/%m/%Y") + "]-"
-      print "--------------------------------------------------------------"         
+      paquete = 'POST /ajax/chat/buddy_list.php HTTP/1.1' + chr(13) + chr(10)
+      paquete += 'Host: apps.facebook.com' + chr(13) + chr(10)
+      paquete += 'User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3' + chr(13) + chr(10)
+      paquete += 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' + chr(13) + chr(10)
+      paquete += 'Accept-Language: es-es,es;q=0.8,en-us;q=0.5,en;q=0.3' + chr(13) + chr(10)
+      paquete += 'Accept-Encoding: deflate' + chr(13) + chr(10)
+      paquete += 'Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7' + chr(13) + chr(10)
+      paquete += 'Keep-Alive: 300' + chr(13) + chr(10)
+      paquete += 'Proxy-Connection: keep-alive' + chr(13) + chr(10)
+      paquete += 'X-SVN-Rev: 130297' + chr(13) + chr(10)
+      paquete += 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' + chr(13) + chr(10)
+      paquete += 'Cookie: ' + cookie_inicial + chr(13) + chr(10)      
+      paquete += 'Pragma: no-cache' + chr(13) + chr(10)
+      paquete += 'Cache-Control: no-cache' + chr(13) + chr(10)
+      paquete += 'Content-Length: ' + str(len(parametros)) + chr(13) + chr(10) + chr(13) + chr(10)
       
-      evaluar(cookie)        
-  else:
-    print "ACK"
-    error_info = extraer(datos,'"errorSummary":"','","')
-    print "[-]-&gt; Error numero: " + error_numero
-    print "[-]-&gt; " + error_info      
-else:
-  if len(cookie_bot) &gt; 0 :
+      paquete += parametros
+      
+      sck_cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
+      sck_cliente.connect((servidor, puerto))
+      sck_cliente.send(paquete)
+      
+      datos = ''
+      
+      _datos_rcv = str(sck_cliente.recv(1024))
+      datos += _datos_rcv
+      
+      error_numero = extraer(datos,'"error":',',"')
+      
+      if error_numero == '0':
+        error_info = 'Todo Bien'
+        nuevo_xs = extraer(datos,"xs=",';')
+        nuevo_time = extraer(datos,'"time":','000,')        
+        
+        cookie_time = extraer(cookie_bot,"time%22%3A","%2C%22ch")
+        cookie_xs = extraer(cookie_bot,"xs=",';')        
+        
+        if len(nuevo_xs) &gt; 0:
+          cookie_bot =  string.replace(cookie_bot,cookie_xs,nuevo_xs)        
+        
+        if len(cookie_time) &gt; 0:
+          cookie_bot = string.replace(cookie_bot,cookie_time,nuevo_time)
+      
+        tipo = "GET"
+        cgi = "/guerra-de-pandillas/bank.php"
+        cookie = cookie_bot
+        parametros = ""
+        
+        datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)['data']
+
+        #print datos
+        
+        if len(datos) &gt; 0:
+          actualizar_datos(datos)
+          
+          print "--------------------------ACK------------------------------------"
+          print "    Nivel: " + str(mi.nivel) + " (" + mi.puntos + ")"
+          print "       HP: " + str(mi.hp)
+          print "       EN: " + str(mi.en)
+          print "      STA: " + str(mi.sta)
+          print " Efectivo: " + str(mi.efectivo)
+          print "    Banco: " + str(mi.banco)
+          print ""
+          print " Ultima actualizacion: -[" + time.strftime("%H:%M:%S %p - %d/%m/%Y") + "]-"
+          print "--------------------------------------------------------------"         
+          
+          evaluar(cookie)        
+      else:
+        print "ACK"
+        error_info = extraer(datos,'"errorSummary":"','","')
+        print "[-]-&gt; Error numero: " + error_numero
+        print "[-]-&gt; " + error_info      
+    else:
+      if len(cookie_bot) &gt; 0 :
+        pass
+      else:
+        print "[-]-Error cookie en blanco"    
+  except:
     pass
-  else:
-    print "[-]-Error cookie en blanco"       except:
-pass
-</code></pre></div></div>
 
-<p>def doit():
+def doit():
   ack(cookie_bot)
-  tmr_ping()</p>
+  tmr_ping()
+  
 
-<p>def tmr_ping():
+def tmr_ping():
 	tmrEnv = threading.Timer(TIEMPO_REFRESCAR, doit)
-	tmrEnv.start()</p>
-
-<p>def hacer_mision(num_mision,cookie):
-  servidor = “apps.facebook.com”
+	tmrEnv.start()
+	
+def hacer_mision(num_mision,cookie):
+  servidor = "apps.facebook.com"
   puerto = 80
-  tipo = “POST”
-  cgi = “/guerra-de-pandillas/job.php”
-  parametros = ‘fb_sig_locale=es_LA&amp;fb_sig_in_new_facebook=1&amp;fb_sig_time=1227319787.6404&amp;fb_sig_added=1&amp;fb_sig_profile_update_time=1225403288&amp;fb_sig_expires=1227406187&amp;fb_sig_user=702519843&amp;fb_sig_session_key=d358bf8467a0f8f3dbf81c97-702519843&amp;fb_sig_api_key=32d28c1bc20d6febfd2ea928c9f5745e&amp;fb_sig=c53a74e068386e9a1f5766f31387cab5&amp;id=’ + str(num_mision) + ‘&amp;sig=3f867f5ac351d486ce3c117bd10b48a68610dd3c’
-  datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)[‘data’]</p>
+  tipo = "POST"
+  cgi = "/guerra-de-pandillas/job.php"
+  parametros = 'fb_sig_locale=es_LA&amp;fb_sig_in_new_facebook=1&amp;fb_sig_time=1227319787.6404&amp;fb_sig_added=1&amp;fb_sig_profile_update_time=1225403288&amp;fb_sig_expires=1227406187&amp;fb_sig_user=702519843&amp;fb_sig_session_key=d358bf8467a0f8f3dbf81c97-702519843&amp;fb_sig_api_key=32d28c1bc20d6febfd2ea928c9f5745e&amp;fb_sig=c53a74e068386e9a1f5766f31387cab5&amp;id=' + str(num_mision) + '&amp;sig=3f867f5ac351d486ce3c117bd10b48a68610dd3c'
+  datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)['data']
 
-<p>#print datos</p>
-
-<p>if len(datos) &gt; 0:
+  #print datos
+  
+  if len(datos) &gt; 0:
     #gpd = gpdatos(datos)
     actualizar_datos(datos)
-    # os.system(“cls”)
-    print “—————————Hacermision———————————–”
-    print “    Nivel: “ + str(mi.nivel)
-    print “       HP: “ + str(mi.hp)
-    print “       EN: “ + str(mi.en)
-    print “      STA: “ + str(mi.sta)
-    print “ Efectivo: “ + str(mi.efectivo)
-    print “    Banco: “ + str(mi.banco)
-    print “————————————————————–”
+    # os.system("cls")
+    print "---------------------------Hacermision-----------------------------------"
+    print "    Nivel: " + str(mi.nivel)
+    print "       HP: " + str(mi.hp)
+    print "       EN: " + str(mi.en)
+    print "      STA: " + str(mi.sta)
+    print " Efectivo: " + str(mi.efectivo)
+    print "    Banco: " + str(mi.banco)
+    print "--------------------------------------------------------------"
   else:
-    print “HACER MISION”
-    error_info = extraer(datos,’“errorSummary”:”’,’”,”’)
-    print “[-]-&gt; Error numero: “ + error_numero
-    print “[-]-&gt; “ + error_info</p>
+    print "HACER MISION"
+    error_info = extraer(datos,'"errorSummary":"','","')
+    print "[-]-&gt; Error numero: " + error_numero
+    print "[-]-&gt; " + error_info
+    
 
-<p>def depositar(monto,cookie):
-  servidor = “apps.facebook.com”
+def depositar(monto,cookie):
+  servidor = "apps.facebook.com"
   puerto = 80
-  tipo = “POST”
-  cgi = “/guerra-de-pandillas/bank.php”
+  tipo = "POST"
+  cgi = "/guerra-de-pandillas/bank.php"
   #cookie = cookie_bot
-  parametros = ‘fb_sig_locale=es_LA&amp;fb_sig_in_new_facebook=1&amp;fb_sig_time=1226121856.5241&amp;fb_sig_added=1&amp;fb_sig_profile_update_time=1225403288&amp;fb_sig_expires=1226208256&amp;fb_sig_user=702519843&amp;fb_sig_session_key=e43ac5bf49316bec4835d147-702519843&amp;fb_sig_api_key=32d28c1bc20d6febfd2ea928c9f5745e&amp;fb_sig=66c423b3a0380090b688e89ded4a44db&amp;amount=’ + str(monto) + ‘&amp;deposit=Depositar’</p>
+  parametros = 'fb_sig_locale=es_LA&amp;fb_sig_in_new_facebook=1&amp;fb_sig_time=1226121856.5241&amp;fb_sig_added=1&amp;fb_sig_profile_update_time=1225403288&amp;fb_sig_expires=1226208256&amp;fb_sig_user=702519843&amp;fb_sig_session_key=e43ac5bf49316bec4835d147-702519843&amp;fb_sig_api_key=32d28c1bc20d6febfd2ea928c9f5745e&amp;fb_sig=66c423b3a0380090b688e89ded4a44db&amp;amount=' + str(monto) + '&amp;deposit=Depositar'
+  
+  datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)['data']  
 
-<p>datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)[‘data’]</p>
-
-<p>#print datos</p>
-
-<p>if len(datos) &gt; 0:
+  #print datos
+  
+  if len(datos) &gt; 0:
     actualizar_datos(datos)
-    # os.system(“cls”)
-    print “————————–depositar————————————”
-    print “    Nivel: “ + str(mi.nivel)
-    print “       HP: “ + str(mi.hp)
-    print “       EN: “ + str(mi.en)
-    print “      STA: “ + str(mi.sta)
-    print “ Efectivo: “ + str(mi.efectivo)
-    print “    Banco: “ + str(mi.banco)
-    print “————————————————————–”
+    # os.system("cls")
+    print "--------------------------depositar------------------------------------"
+    print "    Nivel: " + str(mi.nivel)
+    print "       HP: " + str(mi.hp)
+    print "       EN: " + str(mi.en)
+    print "      STA: " + str(mi.sta)
+    print " Efectivo: " + str(mi.efectivo)
+    print "    Banco: " + str(mi.banco)
+    print "--------------------------------------------------------------"
   else:
-    print “Depositar”
-    error_info = extraer(datos,’“errorSummary”:”’,’”,”’)
-    print “[-]-&gt; Error numero: “ + error_numero
-    print “[-]-&gt; “ + error_info</p>
+    print "Depositar"
+    error_info = extraer(datos,'"errorSummary":"','","')
+    print "[-]-&gt; Error numero: " + error_numero
+    print "[-]-&gt; " + error_info
 
-<p>def evaluar(cookie):
+    
+def evaluar(cookie):
   #$159,900
-  #22/22</p>
+  #22/22
+  
+  
+  #Nota: Colocar como constante global
 
-<p>#Nota: Colocar como constante global</p>
-
-<p>while(1):
+  
+  while(1):
     if (mi.hp &gt;= MIN_HP):
       resultado = buscar_pelea(cookie)
-      #return ({‘pandilleros’:pandilleros,’parametros_pelea’:parametros_pelea})
-      pandilleros = resultado[‘pandilleros’]
-      parametros_pelea = resultado[‘parametros_pelea’]</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  for pandillero in pandilleros:
-    if (mi.hp &gt;= MIN_HP) and (mi.sta &gt;= 1):
-      if ((int(pandillero.nivel) &lt;= mi.nivel) and (pandillero.casino&gt;0) and (pandillero.hotel&gt;0) and (pandillero.estado &lt;&gt; "Grave")):
-        print "Elegido " + pandillero.nombre + " para pelear!"
-        pelear(pandillero,parametros_pelea,cookie) #QUE ACTUALICE MI HP POR LO MENOS QUE SEA GLOBAL
-        print "Pelea con " + pandillero.nombre + " finalizada"
+      #return ({'pandilleros':pandilleros,'parametros_pelea':parametros_pelea})
+      pandilleros = resultado['pandilleros']
+      parametros_pelea = resultado['parametros_pelea']
+      
+      for pandillero in pandilleros:
+        if (mi.hp &gt;= MIN_HP) and (mi.sta &gt;= 1):
+          if ((int(pandillero.nivel) &lt;= mi.nivel) and (pandillero.casino&gt;0) and (pandillero.hotel&gt;0) and (pandillero.estado &lt;&gt; "Grave")):
+            print "Elegido " + pandillero.nombre + " para pelear!"
+            pelear(pandillero,parametros_pelea,cookie) #QUE ACTUALICE MI HP POR LO MENOS QUE SEA GLOBAL
+            print "Pelea con " + pandillero.nombre + " finalizada"
+        else:
+          break
     else:
       break
-else:
-  break
-</code></pre></div></div>
-
-<p>int_efectivo = mi.efectivo
-  int_en = mi.en</p>
-
-<p>if int_efectivo &gt;= 100:
-    depositar(int_efectivo,cookie)</p>
-
-<p>if int_en &gt;= EN_PARA_HACER_MISION:
-    hacer_mision(NUM_MISION,cookie)</p>
-
-<p>def armar_parametros_pelea(datos):
-  resultado = ‘fb_sig_locale=es_LA&amp;fb_sig_in_new_facebook=1’
+  
+  int_efectivo = mi.efectivo
+  int_en = mi.en
+  
+  if int_efectivo &gt;= 100:
+    depositar(int_efectivo,cookie)
+  
+  if int_en &gt;= EN_PARA_HACER_MISION:
+    hacer_mision(NUM_MISION,cookie)
+    
+def armar_parametros_pelea(datos):
+  resultado = 'fb_sig_locale=es_LA&amp;fb_sig_in_new_facebook=1'
   temp_param = []
-  temp_param.append(‘fb_sig_time’)
-  temp_param.append(‘fb_sig_added’)
-  temp_param.append(‘fb_sig_profile_update_time’)
-  temp_param.append(‘fb_sig_expires’)
-  temp_param.append(‘fb_sig_user’)
-  temp_param.append(‘fb_sig_session_key’)
-  temp_param.append(‘fb_sig_api_key’)
-  temp_param.append(‘fb_sig’)</p>
-
-<p>for param in temp_param: 
-    #temp_param = ‘&amp;’ + param
-    resultado += ‘&amp;’ + param + ‘=’ + extraer(datos,’name=”’ + param + ‘” value=”’,’” /&gt;’)</p>
-
-<p>resultado += ‘&amp;action=fight_single&amp;id=IDPANDILLERO&amp;sig=’</p>
-
-<p>#print “EN ARMAR” + resultado
-  #exit_client()</p>
-
-<p>return resultado</p>
-
-<p>def prueba_data(archivo):
+  temp_param.append('fb_sig_time')
+  temp_param.append('fb_sig_added')
+  temp_param.append('fb_sig_profile_update_time')
+  temp_param.append('fb_sig_expires')
+  temp_param.append('fb_sig_user')
+  temp_param.append('fb_sig_session_key')
+  temp_param.append('fb_sig_api_key')
+  temp_param.append('fb_sig')
+  
+  for param in temp_param: 
+    #temp_param = '&amp;' + param
+    resultado += '&amp;' + param + '=' + extraer(datos,'name="' + param + '" value="','" /&gt;')
+  
+  resultado += '&amp;action=fight_single&amp;id=IDPANDILLERO&amp;sig='
+  
+  #print "EN ARMAR" + resultado
+  #exit_client()
+  
+  return resultado
+  
+def prueba_data(archivo):
   fileHandle = open (archivo)
   resultado = fileHandle.read()
   fileHandle.close() 
-  return resultado</p>
+  return resultado
 
-<p>def pedir_lista_peleas(cookie):
-  global cont_lista_peleas</p>
-
-<p>servidor = “apps.facebook.com”
+def pedir_lista_peleas(cookie):
+  global cont_lista_peleas
+  
+  servidor = "apps.facebook.com"
   puerto = 80
-  tipo = “GET”
-  #cgi = ‘/ajax/ct.php?app_id=19100272286&amp;action_type=3&amp;post_form_id=4621c09af5c8d918cee82aeed4a39ba5&amp;position=3&amp;0.6336457102957316’</p>
-
-<p>#cgi = ‘/guerra-de-pandillas/fight.php’</p>
-
-<p>if (cont_lista_peleas &lt; 1001):
+  tipo = "GET"
+  #cgi = '/ajax/ct.php?app_id=19100272286&amp;action_type=3&amp;post_form_id=4621c09af5c8d918cee82aeed4a39ba5&amp;position=3&amp;0.6336457102957316'
+  
+  #cgi = '/guerra-de-pandillas/fight.php'
+  
+  if (cont_lista_peleas &lt; 1001):
     cont_lista_peleas += 5
   else:
-    cont_lista_peleas = 5</p>
-
-<p>cgi = ‘/guerra-de-pandillas/fight.php?b=’ + str(cont_lista_peleas)
+    cont_lista_peleas = 5
+  
+  
+  cgi = '/guerra-de-pandillas/fight.php?b=' + str(cont_lista_peleas)
   #http://apps.facebook.com/guerra-de-pandillas/fight.php?b=5
   #cookie = cookie_bot
-  parametros = ‘’</p>
+  parametros = ''
+  
+  datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)['data']
 
-<p>datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)[‘data’]</p>
-
-<p>#print datos</p>
-
-<p>if len(datos) &gt; 0:  <br />
+  #print datos  
+  
+  if len(datos) &gt; 0:    
     return datos
   else:
-    print “pedir lista”
-    error_numero = extraer(datos,’“error”:’,’,”’)
-    error_info = extraer(datos,’“errorSummary”:”’,’”,”’)
-    print “[-]-&gt; Error numero: “ + error_numero
-    print “[-]-&gt; “ + error_info
-    exit_client()</p>
+    print "pedir lista"
+    error_numero = extraer(datos,'"error":',',"')
+    error_info = extraer(datos,'"errorSummary":"','","')
+    print "[-]-&gt; Error numero: " + error_numero
+    print "[-]-&gt; " + error_info
+    exit_client()
 
-<p>def pelear(pand,parametros_pelea,cookie):
-  #print “<strong>**</strong>***EN PELEAR ID: “ + id<br />
-  servidor = “apps.facebook.com”
+def pelear(pand,parametros_pelea,cookie):
+  #print "*********EN PELEAR ID: " + id  
+  servidor = "apps.facebook.com"
   puerto = 80
-  tipo = “POST”
-  cgi = ‘/guerra-de-pandillas/details.php’
-  cookie += ‘; made_write_conn=1226268812’</p>
-
-<p>parametros = parametros_pelea.replace(‘IDPANDILLERO’,str(pand.id))
-  parametros += pand.sig</p>
-
-<p>#print “PARAMETROS DE PELEA: “ + parametros
-  #exit_client()</p>
-
-<p>datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)[‘data’]</p>
-
-<p>if len(datos) &gt; 0:
+  tipo = "POST"
+  cgi = '/guerra-de-pandillas/details.php'
+  cookie += '; made_write_conn=1226268812'
+  
+  parametros = parametros_pelea.replace('IDPANDILLERO',str(pand.id))
+  parametros += pand.sig
+  
+  #print "PARAMETROS DE PELEA: " + parametros
+  #exit_client()
+  
+  datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)['data']
+  
+  if len(datos) &gt; 0:
     actualizar_datos(datos)
   else:
-    print “Error en pelear()”
-    error_info = extraer(datos,’“errorSummary”:”’,’”,”’)
-    print “[-]-&gt; Error numero: “ + error_numero
-    print “[-]-&gt; “ + error_info
-    exit_client()</p>
+    print "Error en pelear()"
+    error_info = extraer(datos,'"errorSummary":"','","')
+    print "[-]-&gt; Error numero: " + error_numero
+    print "[-]-&gt; " + error_info
+    exit_client()
 
-<p>def buscar_pelea(cookie):
+
+def buscar_pelea(cookie):
   datos = pedir_lista_peleas(cookie)
-  parametros_pelea = armar_parametros_pelea(datos)</p>
-
-<p>#print “PARAMETROS LISTA EN BUSCAR PELEA: “ + parametros_lista
-  #exit_client()</p>
-
-<p>marcador = ‘&lt;div class="mod_info"&gt;’
-  pos_primero = datos.find(marcador)</p>
-
-<p>datos = datos[pos_primero:len(datos)]
-  #print datos</p>
-
-<p>marcador2 = ‘&lt;div class="mod_profile_pic"&gt;’
-  tmp = datos.split(marcador2)</p>
-
-<p>pandilleros = []</p>
-
-<p>print “————————–Buscando Pelea…————————————”
-  print “”
-  print “”</p>
-
-<p>#i = 1
-  for i in range(5):</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dato_pandillero = tmp[i]
-id = extraer(dato_pandillero,'&lt;a name="','"')
-sig = extraer(dato_pandillero,'&amp;#039;,&amp;#039;','&amp;#039;);}')
-nombre = extraer(dato_pandillero,';return true;"&gt;','&lt;/a&gt;&lt;br /&gt;')    
-nivel = extraer(dato_pandillero,'Nivel: &lt;span class="green"&gt;','&lt;/span&gt;')    
-apodo = extraer(dato_pandillero,'Apodo: &lt;span class="blue"&gt;','&lt;/span&gt;')
-
-if dato_pandillero.find('Estado: &lt;span class="green"&gt;') &gt; 0:
-  estado = "Normal"
-elif dato_pandillero.find('Estado: &lt;span class="yellow"&gt;') &gt; 0:
-  estado = "Herido"
-elif dato_pandillero.find('Estado: &lt;span class="red"&gt;') &gt; 0:
-  estado = "Grave"
-else:
-  estado = "Desconocido"
-
-
-pand = c_pandillero()
+  parametros_pelea = armar_parametros_pelea(datos)
+  
+  #print "PARAMETROS LISTA EN BUSCAR PELEA: " + parametros_lista
+  #exit_client()
+  
+  marcador = '&lt;div class="mod_info"&gt;'
+  pos_primero = datos.find(marcador)
+  
+  datos = datos[pos_primero:len(datos)]
+  #print datos
+  
+  marcador2 = '&lt;div class="mod_profile_pic"&gt;'
+  tmp = datos.split(marcador2) 
+  
+  pandilleros = []
+  
+  print "--------------------------Buscando Pelea...------------------------------------"
+  print ""
+  print ""
+  
+  #i = 1
+  for i in range(5):
+    dato_pandillero = tmp[i]
+    id = extraer(dato_pandillero,'&lt;a name="','"')
+    sig = extraer(dato_pandillero,'&amp;#039;,&amp;#039;','&amp;#039;);}')
+    nombre = extraer(dato_pandillero,';return true;"&gt;','&lt;/a&gt;&lt;br /&gt;')    
+    nivel = extraer(dato_pandillero,'Nivel: &lt;span class="green"&gt;','&lt;/span&gt;')    
+    apodo = extraer(dato_pandillero,'Apodo: &lt;span class="blue"&gt;','&lt;/span&gt;')
     
-pand.id = id
-pand.sig = sig
-pand.nombre = nombre
-pand.nivel = int(nivel)
-pand.apodo = apodo
-pand.estado = estado
-
-pand_resultado = propiedades_pandillero(pand,cookie)
-
-#Comentar
-#"""
-print "==================================================="
-print "     ID: " + str(pand_resultado.id)
-print "    SIG: " + str(pand_resultado.sig)
-print " Nombre: " + str(pand_resultado.nombre)
-print "  Nivel: " + str(pand_resultado.nivel)
-print "  Apodo: " + str(pand_resultado.apodo)
-print " Estado: " + str(pand_resultado.estado)    
-print "Esquina: " + str(pand_resultado.esquina)
-print "  Hotel: " + str(pand_resultado.hotel)
-print " Casino: " + str(pand_resultado.casino)
-#print "==================================================="
-#"""
-
-pandilleros.append(pand_resultado)
-</code></pre></div></div>
-
-<p>return ({‘pandilleros’:pandilleros,’parametros_pelea’:parametros_pelea})</p>
-
-<p>def desglosar_propiedades_pandillero(datos,pand):<br />
-  marca_esquina = ‘“blue”&gt;Esquina (‘<br />
-  marca_tienda = ‘“blue”&gt;Tienda (‘
-  marca_cibercafe = ‘“blue”&gt;Ciber-caf’
-  marca_gimnasio =  ‘“blue”&gt;Gimnasio (‘
-  marca_bar = ‘“blue”&gt;Bar (‘
-  marca_restaurante = ‘“blue”&gt;Restaurante (‘
-  marca_discoteca = ‘“blue”&gt;Discoteca (‘
-  marca_prostibulo = ‘“blue”&gt;Prost’
-  marca_centro_comercial = ‘“blue”&gt;Centro comercial (‘
-  marca_hotel = ‘“blue”&gt;Hotel (‘
-  marca_casino = ‘“blue”&gt;Casino (‘</p>
-
-<p>if datos.find(marca_esquina) &gt; 0:<br />
-    esquina = extraer(datos,marca_esquina,’)’)
+    if dato_pandillero.find('Estado: &lt;span class="green"&gt;') &gt; 0:
+      estado = "Normal"
+    elif dato_pandillero.find('Estado: &lt;span class="yellow"&gt;') &gt; 0:
+      estado = "Herido"
+    elif dato_pandillero.find('Estado: &lt;span class="red"&gt;') &gt; 0:
+      estado = "Grave"
+    else:
+      estado = "Desconocido"
+    
+    
+    pand = c_pandillero()
+        
+    pand.id = id
+    pand.sig = sig
+    pand.nombre = nombre
+    pand.nivel = int(nivel)
+    pand.apodo = apodo
+    pand.estado = estado
+    
+    pand_resultado = propiedades_pandillero(pand,cookie)
+    
+    #Comentar
+    #"""
+    print "==================================================="
+    print "     ID: " + str(pand_resultado.id)
+    print "    SIG: " + str(pand_resultado.sig)
+    print " Nombre: " + str(pand_resultado.nombre)
+    print "  Nivel: " + str(pand_resultado.nivel)
+    print "  Apodo: " + str(pand_resultado.apodo)
+    print " Estado: " + str(pand_resultado.estado)    
+    print "Esquina: " + str(pand_resultado.esquina)
+    print "  Hotel: " + str(pand_resultado.hotel)
+    print " Casino: " + str(pand_resultado.casino)
+    #print "==================================================="
+    #"""
+    
+    pandilleros.append(pand_resultado)
+    
+  return ({'pandilleros':pandilleros,'parametros_pelea':parametros_pelea})
+  
+def desglosar_propiedades_pandillero(datos,pand):  
+  marca_esquina = '"blue"&gt;Esquina ('  
+  marca_tienda = '"blue"&gt;Tienda ('
+  marca_cibercafe = '"blue"&gt;Ciber-caf'
+  marca_gimnasio =  '"blue"&gt;Gimnasio ('
+  marca_bar = '"blue"&gt;Bar ('
+  marca_restaurante = '"blue"&gt;Restaurante ('
+  marca_discoteca = '"blue"&gt;Discoteca ('
+  marca_prostibulo = '"blue"&gt;Prost'
+  marca_centro_comercial = '"blue"&gt;Centro comercial ('
+  marca_hotel = '"blue"&gt;Hotel ('
+  marca_casino = '"blue"&gt;Casino ('
+  
+  
+  if datos.find(marca_esquina) &gt; 0:  
+    esquina = extraer(datos,marca_esquina,')')
   else:
-    esquina = 0</p>
-
-<p>if datos.find(marca_tienda) &gt; 0:<br />
-    tienda = extraer(datos,marca_tienda,’)’)
+    esquina = 0
+  
+  if datos.find(marca_tienda) &gt; 0:  
+    tienda = extraer(datos,marca_tienda,')')
   else:
-    tienda = 0</p>
-
-<p>if datos.find(marca_cibercafe) &gt; 0:<br />
-    cibercafe = extraer(datos,marca_cibercafe,’&lt;/span&gt;’)
-    cibercafe = extraer(cibercafe,’(‘,’)’)
+    tienda = 0
+    
+  if datos.find(marca_cibercafe) &gt; 0:  
+    cibercafe = extraer(datos,marca_cibercafe,'&lt;/span&gt;')
+    cibercafe = extraer(cibercafe,'(',')')
   else:
-    cibercafe = 0</p>
-
-<p>if datos.find(marca_gimnasio) &gt; 0:<br />
-    gimnasio =  extraer(datos,marca_gimnasio,’)’)
+    cibercafe = 0
+  
+  if datos.find(marca_gimnasio) &gt; 0:  
+    gimnasio =  extraer(datos,marca_gimnasio,')')
   else:
-    gimnasio = 0</p>
-
-<p>if datos.find(marca_bar) &gt; 0:<br />
-    bar = extraer(datos,marca_bar,’)’)
+    gimnasio = 0
+  
+  if datos.find(marca_bar) &gt; 0:  
+    bar = extraer(datos,marca_bar,')')
   else:
-    bar = 0</p>
-
-<p>if datos.find(marca_restaurante) &gt; 0:<br />
-    restaurante = extraer(datos,marca_restaurante,’)’)
+    bar = 0
+  
+  if datos.find(marca_restaurante) &gt; 0:  
+    restaurante = extraer(datos,marca_restaurante,')')
   else:
-    restaurante = 0</p>
-
-<p>if datos.find(marca_discoteca) &gt; 0:<br />
-    discoteca = extraer(datos,marca_discoteca,’)’)
+    restaurante = 0
+  
+  if datos.find(marca_discoteca) &gt; 0:  
+    discoteca = extraer(datos,marca_discoteca,')')
   else:
-    discoteca = 0</p>
-
-<p>if datos.find(marca_prostibulo) &gt; 0:<br />
-    prostibulo = extraer(datos,marca_prostibulo,’&lt;/span&gt;’)
-    prostibulo = extraer(prostibulo,’(‘,’)’)
+    discoteca = 0
+  
+  if datos.find(marca_prostibulo) &gt; 0:  
+    prostibulo = extraer(datos,marca_prostibulo,'&lt;/span&gt;')
+    prostibulo = extraer(prostibulo,'(',')')
   else:
-    prostibulo = 0</p>
-
-<p>if datos.find(marca_centro_comercial) &gt; 0:<br />
-    centro_comercial = extraer(datos,marca_centro_comercial,’)’)
+    prostibulo = 0
+  
+  if datos.find(marca_centro_comercial) &gt; 0:  
+    centro_comercial = extraer(datos,marca_centro_comercial,')')
   else:
-    centro_comercial = 0</p>
-
-<p>if datos.find(marca_hotel) &gt; 0:<br />
-    hotel = extraer(datos,marca_hotel,’)’)
+    centro_comercial = 0
+  
+  if datos.find(marca_hotel) &gt; 0:  
+    hotel = extraer(datos,marca_hotel,')')
   else:
-    hotel = 0</p>
-
-<p>if datos.find(marca_casino) &gt; 0:<br />
-    casino = extraer(datos,marca_casino,’)’)
+    hotel = 0
+  
+  if datos.find(marca_casino) &gt; 0:  
+    casino = extraer(datos,marca_casino,')')
   else:
-    casino = 0</p>
-
-<p>pand.esquina = esquina
+    casino = 0
+  
+  pand.esquina = esquina
   pand.tienda = tienda
   pand.cibercafe = cibercafe
   pand.gimnasio = gimnasio
@@ -838,57 +849,59 @@ pandilleros.append(pand_resultado)
   pand.prostibulo = prostibulo
   pand.centro_comercial = centro_comercial
   pand.hotel = hotel
-  pand.casino = casino</p>
+  pand.casino = casino
+  
+  return pand
 
-<p>return pand</p>
-
-<p>def propiedades_pandillero(pand,cookie):
-  id_pandillero = pand.id</p>
-
-<p>servidor = “apps.facebook.com”
+def propiedades_pandillero(pand,cookie):
+  id_pandillero = pand.id
+  
+  servidor = "apps.facebook.com"
   puerto = 80
-  tipo = “GET”
-  cgi = “/guerra-de-pandillas/details.php?id=” + id_pandillero
+  tipo = "GET"
+  cgi = "/guerra-de-pandillas/details.php?id=" + id_pandillero
   #cookie = cookie_bot
-  parametros = ‘’</p>
+  parametros = ''
+  
+  datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)['data']
 
-<p>datos = httphack.peticionhttp(servidor,cgi,tipo,parametros,cookie=cookie,debug_mode=True,encode_cgi=False)[‘data’]</p>
-
-<p>#print datos</p>
-
-<p>if len(datos) &gt; 0:  <br />
+  #print datos
+  
+  if len(datos) &gt; 0:    
     pand_resultado = desglosar_propiedades_pandillero(datos,pand)
   else:
-    print “Propiedades Pandillero”
-    error_info = extraer(datos,’“errorSummary”:”’,’”,”’)
-    print “[-]-&gt; Error numero: “ + error_numero
-    print “[-]-&gt; “ + error_info <br />
-    exit_client()</p>
+    print "Propiedades Pandillero"
+    error_info = extraer(datos,'"errorSummary":"','","')
+    print "[-]-&gt; Error numero: " + error_numero
+    print "[-]-&gt; " + error_info   
+    exit_client()
+  
+  return pand_resultado
 
-<p>return pand_resultado</p>
+def main():
+  global cookie_bot
+  
+  os.system("cls")
+  
+  sck_servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  
+  sck_servidor.bind((socket.gethostname(), 8080))
+  
+  
+  sck_servidor.listen(5)
 
-<p>def main():
-  global cookie_bot</p>
-
-<p>os.system(“cls”)</p>
-
-<p>sck_servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</p>
-
-<p>sck_servidor.bind((socket.gethostname(), 8080))</p>
-
-<p>sck_servidor.listen(5)</p>
-
-<p>while (1):
-    conn, addr = sck_servidor.accept()<br />
+  while (1):
+    conn, addr = sck_servidor.accept()  
     if tomar_cookie(conn) == True:
       sck_servidor.close()
-      break</p>
+      break
+  
+  ack(cookie_bot)
+  tmr_ping()
 
-<p>ack(cookie_bot)
-  tmr_ping()</p>
-
-<p>if <strong>name</strong> == ‘<strong>main</strong>’:
-  main()</p>
+if __name__ == '__main__':
+  main()
+</code></pre>
 
 
       </section>
