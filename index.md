@@ -1,3 +1,5 @@
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
+
 <img src="https://raw.githubusercontent.com/elieser9001/assets/main/antenna.png"
      alt="windows_icon"
      style="float: left; margin-right: 10px;" />
