@@ -1,4 +1,7 @@
-## Welcome to GitHub Pages
+<img src="https://raw.githubusercontent.com/elieser9001/assets/main/antenna.png"
+     alt="Markdown Monster icon"
+     style="float: left; margin-right: 10px;" />
+## NetSuite
 
 You can use the [editor on GitHub](https://github.com/elieser9001/log/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
 
